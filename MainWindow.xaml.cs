@@ -86,38 +86,27 @@ namespace CheckSumCalculator
 
         private void CalculateClick(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(filePathTextBox.Text))
+            {
+                ShowToast("请选择要计算的文件", 2);
+                return;
+            }
             var checkSum = CalculateCheckSum(filePathTextBox.Text, typeof(SHA512));
             SHA512Cheksum.Text = checkSum;
             checkSum = CalculateCheckSum(filePathTextBox.Text, typeof(MD5));
             MD5Checksum.Text = checkSum;
         }
 
-        private void SHA512Button_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (string.IsNullOrEmpty(SHA512Cheksum.Text))
-                return;
-            Clipboard.SetText(SHA512Cheksum.Text);
-            ShowToast("已复制到粘贴板", 3);
-        }
-
-        private void MD5Button_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (string.IsNullOrEmpty(MD5Checksum.Text))
-                return;
-            Clipboard.SetText(MD5Checksum.Text);
-            ShowToast("已复制到粘贴板", 2);
-        }
-
         private void HideToast()
         {
-            messageBlock.Visibility = Visibility.Hidden;
-            messageBlock.Text = "";
+            toast.Visibility = Visibility.Hidden;
+            toast.Text = "";
         }
 
         private void ShowToast(string str)
         {
-            messageBlock.Visibility = Visibility.Visible;
-            messageBlock.Text = str;
+            toast.Visibility = Visibility.Visible;
+            toast.Text = str;
         }
 
         private void ShowToast(string str, int showTime)
@@ -130,6 +119,38 @@ namespace CheckSumCalculator
                 var tim = (DispatcherTimer)sender;
                 tim.Stop();
             };
+        }
+
+        private void TextButton_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var btn = sender as Button;
+            var txtblock = btn.Content as TextBlock;
+
+            if (string.IsNullOrEmpty(txtblock?.Text))
+            {
+                return;
+            }
+
+            Clipboard.SetText(txtblock.Text);
+            ShowToast("已复制到粘贴板", 1);
+        }
+
+        private void Rectangle_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+                if (files != null && files.Length > 0)
+                {
+                    ((TextBox)sender).Text = files[0];
+                    fileSize.Text = new FileInfo(files[0]).Length.ToString();
+                }
+            }
+        }
+
+        private void Rectangle_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

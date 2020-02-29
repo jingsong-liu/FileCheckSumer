@@ -10,6 +10,7 @@
         Background="White"
         Title="MainWindow" Height="450" Width="800"
         Icon="Icon.png"
+        WindowStartupLocation="CenterScreen"
         >
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" CornerRadius="8" GlassFrameThickness="0"/>
@@ -38,12 +39,13 @@
         <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
         <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
         <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
-        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="White"/>
         <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
         <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
         <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
         <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
         <Style x:Key="checkSumButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="ToolTip" Value="双击可复制"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
@@ -61,7 +63,7 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                            
+
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
@@ -105,28 +107,32 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="filePathTextBox" MinWidth="100" Grid.Column="0"/>
-                        <Button Margin="5 0" Content="选择文件" Click="chooseFileButton_Click" Grid.Column="1"/>
+                        <TextBox ToolTip="输入文件路径或拖拽文件到输入框" x:Name="filePathTextBox" MinWidth="100" Grid.Column="0" AllowDrop="True" PreviewDragOver="Rectangle_PreviewDragOver"  Drop="Rectangle_Drop"/>
+                        <Button Margin="5 0" Content="选择文件" Click="chooseFileButton_Click" Grid.Column="1" ToolTip="选择或拖拽文件到输入框" />
                     </Grid>
 
-                    <TextBlock Margin="0 5" Text="选择文件或者将目标文件拖拽到方框" TextWrapping="Wrap" FontSize="16"/>
-                    <Border BorderBrush="Black" BorderThickness="1">
-                        <Rectangle Height="200"/>
-                    </Border>
                     <Grid Margin="0 10">
                         <Button Height="30" Content="计算" Click="CalculateClick"/>
                     </Grid>
+                    <TextBlock Margin="0 10" Text="校验和" TextWrapping="Wrap" FontSize="16"/>
+                    <Border BorderBrush="Black" BorderThickness="1" Padding="5">
+                        <TextBlock TextWrapping="Wrap" FontSize="16" LineHeight="10">
+                            总和检验码，校验和。在数据处理和数据通信领域中，用于校验目的的一组数据项的和。这些数据项可以是数字或在计算检验总和过程中看作数字的其它字符串。
+                        </TextBlock>
+                    </Border>
+
                 </StackPanel>
             </Grid>
             <!--right panel-->
-            <Grid Grid.Column="1" Margin="10">
+            <Grid Grid.Column="1" Margin="30 0 0 10">
                 <StackPanel>
+                    <TextBlock Name="toast" HorizontalAlignment="Right" Grid.Column="1" Margin="5" Foreground="White" Background="DimGray" Height="18" FontSize="14" Visibility="Hidden"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="5"><Run Text="文件名  "/><Run FontSize="12" Text="双击复制"/></TextBlock>
+                        <TextBlock Grid.Column="0" Margin="5"><Run Text="文件名"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <TextBlock x:Name="fileName" Style="{StaticResource checksum}"/>
@@ -139,38 +145,35 @@
                         <TextBlock Grid.Column="0" Margin="5"><Run Text="文件大小  "/><Run FontSize="12" Text="(字节）"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
-                        <TextBlock x:Name="fileSize" Style="{StaticResource checksum}"/>
+                        <Button Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="TextButton_DoubleClick">
+                            <TextBlock x:Name="fileSize" Style="{StaticResource checksum}"/>
+                        </Button>
                     </Border>
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="5"><Run Text="校验码  "/><Run FontSize="12" Text="双击复制"/></TextBlock>
-                        <TextBlock Name="messageBlock" Grid.Column="1" Margin="5" Foreground="White" Background="Black" Height="16" FontSize="12" Visibility="Hidden"/>
+                        <TextBlock Grid.Column="0" Margin="5"><Run Text="校验码  "/><Run FontSize="12"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <StackPanel>
-                            <Button Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="SHA512Button_MouseDoubleClick">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="SHA512:" Grid.Column="0" Style="{StaticResource checksum}" HorizontalAlignment="Left"/>
-                                    <TextBlock Name="SHA512Cheksum" Grid.Column="1" Style="{StaticResource checksum}"/>
+                                <Button Grid.Column="1" Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="TextButton_DoubleClick">
+                                    <TextBlock Name="SHA512Cheksum" Style="{StaticResource checksum}"/>
+                                </Button>
                                 </Grid>
-                            </Button>
-                            <Button Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="MD5Button_MouseDoubleClick">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="MD5:" Grid.Column="0" Style="{StaticResource checksum}" HorizontalAlignment="Left"/>
-                                    <TextBlock Name="MD5Checksum" Grid.Column="1" Style="{StaticResource checksum}"/>
-                                </Grid>
+                                    <TextBlock Text="MD5:" Grid.Column="0" Style="{StaticResource checksum}" HorizontalAlignment="Left" Margin="5,5,0,5"/>
+                                <Button Grid.Column="1" Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="TextButton_DoubleClick">
+                                    <TextBlock Name="MD5Checksum" Style="{StaticResource checksum}" Grid.ColumnSpan="3"/>
                             </Button>
+                                </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>
