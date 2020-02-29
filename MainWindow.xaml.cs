@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -22,41 +13,56 @@ namespace CheckSumCalculator
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Background worker for calculation task
+        /// </summary>
+        private readonly BackgroundWorker worker;
+
         public MainWindow()
         {
             InitializeComponent();
+            worker = new BackgroundWorker();
+            Loaded += MainWindow_Loaded;
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Close();
+            InitWorker();
         }
 
-        private void chooseFileButton_Click(object sender, RoutedEventArgs e)
+        #region Background Worker
+        private void InitWorker()
         {
-            // Create OpenFileDialog 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
-
-
-            // Get the selected file name and display in a TextBox 
-            if (result == true)
-            {
-                // Open document 
-                string filepath = dlg.FileName;
-                filePathTextBox.Text = filepath;
-
-                fileName.Text = Path.GetFileName(filepath);
-                fileSize.Text = new FileInfo(filepath).Length.ToString();
-            }
+            worker.DoWork += Worker_DoWork;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var filePath = e.Argument as string;
+            var sha512checkSum = CalculateCheckSum(filePath, typeof(SHA512));
+            var md5checkSum = CalculateCheckSum(filePath, typeof(MD5));
+            e.Result = new CalculateResult { SHA512 = sha512checkSum, MD5 = md5checkSum };
+        }
+
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var res = e.Result as CalculateResult;
+            SHA512Cheksum.Text = res.SHA512;
+            MD5Checksum.Text = res.MD5;
+            ShowToast("计算完成", 2);
+        }
+        #endregion
 
         public static string CalculateCheckSum(string filepath, Type alg)
         {
+            if (!File.Exists(filepath))
+            {
+                return null;
+            }
             try
             {
                 HashAlgorithm core = null;
@@ -84,19 +90,7 @@ namespace CheckSumCalculator
             }
         }
 
-        private void CalculateClick(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(filePathTextBox.Text))
-            {
-                ShowToast("请选择要计算的文件", 2);
-                return;
-            }
-            var checkSum = CalculateCheckSum(filePathTextBox.Text, typeof(SHA512));
-            SHA512Cheksum.Text = checkSum;
-            checkSum = CalculateCheckSum(filePathTextBox.Text, typeof(MD5));
-            MD5Checksum.Text = checkSum;
-        }
-
+        #region Toast
         private void HideToast()
         {
             toast.Visibility = Visibility.Hidden;
@@ -120,21 +114,9 @@ namespace CheckSumCalculator
                 tim.Stop();
             };
         }
+        #endregion
 
-        private void TextButton_DoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var btn = sender as Button;
-            var txtblock = btn.Content as TextBlock;
-
-            if (string.IsNullOrEmpty(txtblock?.Text))
-            {
-                return;
-            }
-
-            Clipboard.SetText(txtblock.Text);
-            ShowToast("已复制到粘贴板", 1);
-        }
-
+        #region Drag support
         private void Rectangle_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -152,5 +134,62 @@ namespace CheckSumCalculator
         {
             e.Handled = true;
         }
+        #endregion
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ChooseFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                string filepath = dlg.FileName;
+                filePathTextBox.Text = filepath;
+
+                fileName.Text = Path.GetFileName(filepath);
+                fileSize.Text = new FileInfo(filepath).Length.ToString();
+            }
+        }
+
+        private void CalculateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(filePathTextBox.Text))
+            {
+                ShowToast("请选择要计算的文件", 2);
+                return;
+            }
+
+            if (worker.IsBusy)
+            {
+                ShowToast("正在计算，请稍后", 2);
+                return;
+            }
+            else
+            {
+                ShowToast("计算中，请稍等", 2);
+                worker.RunWorkerAsync(filePathTextBox.Text);
+            }
+        }
+
+        private void TextButton_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var btn = sender as Button;
+            var txtblock = btn.Content as TextBlock;
+
+            if (string.IsNullOrEmpty(txtblock?.Text))
+            {
+                return;
+            }
+
+            Clipboard.SetText(txtblock.Text);
+            ShowToast("已复制到粘贴板", 1);
+        }
+
     }
 }

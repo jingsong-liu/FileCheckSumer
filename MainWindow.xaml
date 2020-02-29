@@ -113,11 +113,11 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox ToolTip="输入文件路径或拖拽文件到输入框" x:Name="filePathTextBox" MinWidth="100" Grid.Column="0" AllowDrop="True" PreviewDragOver="Rectangle_PreviewDragOver"  Drop="Rectangle_Drop"/>
-                        <Button Margin="5 0" Content="选择文件" Click="chooseFileButton_Click" Grid.Column="1" ToolTip="选择或拖拽文件到输入框" />
+                        <Button Margin="5 0" Content="选择文件" Click="ChooseFileButton_Click" Grid.Column="1" ToolTip="选择或拖拽文件到输入框" />
                     </Grid>
 
                     <Grid Margin="0 10">
-                        <Button Height="30" Content="计算" Click="CalculateClick"/>
+                        <Button Height="30" Content="计算" Click="CalculateButton_Click"/>
                     </Grid>
                     <TextBlock Margin="0 10" Text="校验和" TextWrapping="Wrap" FontSize="16"/>
                     <Border BorderBrush="Black" BorderThickness="1" Padding="5">
