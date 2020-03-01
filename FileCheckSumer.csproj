@@ -5,6 +5,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <PackageProjectUrl>https://github.com/jingsong-liu/FileCheckSumer/</PackageProjectUrl>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <RepositoryUrl>https://github.com/jingsong-liu/FileCheckSumer/</RepositoryUrl>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
 
   <ItemGroup>
