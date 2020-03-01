@@ -30,7 +30,7 @@
             </Style.Resources>
         </Style>
         <Style TargetType="TextBlock" x:Key="checksum" >
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="5"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="MinWidth" Value="70"/>
@@ -144,7 +144,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="5"><Run Text="文件名"/></TextBlock>
+                        <TextBlock Grid.Column="0" Margin="5" FontSize="16"><Run Text="文件名"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <TextBlock x:Name="fileName" Style="{StaticResource checksum}"/>
@@ -154,7 +154,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="5"><Run Text="文件大小  "/><Run FontSize="12" Text="(字节）"/></TextBlock>
+                        <TextBlock Grid.Column="0" Margin="5" FontSize="16"><Run Text="文件大小  "/><Run FontSize="12" Text="(字节）"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <Button Style="{DynamicResource checkSumButtonStyle}" MouseDoubleClick="TextButton_DoubleClick">
@@ -162,7 +162,7 @@
                         </Button>
                     </Border>
                     <Grid>
-                        <TextBlock Grid.Column="0" Margin="5"><Run Text="校验码  "/><Run FontSize="12"/></TextBlock>
+                        <TextBlock Grid.Column="0" Margin="5" FontSize="16"><Run Text="校验码  "/><Run FontSize="12"/></TextBlock>
                     </Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <StackPanel>
