@@ -10,7 +10,7 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
-namespace CheckSumCalculator
+namespace FileCheckSumer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

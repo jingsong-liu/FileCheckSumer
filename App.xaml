@@ -1,7 +1,7 @@
-﻿<Application x:Class="CheckSumCalculator.App"
+﻿<Application x:Class="FileCheckSumer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CheckSumCalculator"
+             xmlns:local="clr-namespace:FileCheckSumer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

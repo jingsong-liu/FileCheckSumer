@@ -1,4 +1,4 @@
-﻿namespace CheckSumCalculator
+﻿namespace FileCheckSumer
 {
     public class CalculateResult
     {
