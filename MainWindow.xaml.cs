@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -20,6 +22,7 @@ namespace CheckSumCalculator
         /// Background worker for calculation task
         /// </summary>
         private readonly BackgroundWorker worker;
+        private const string feedbackUrl = "https://github.com/jingsong-liu/FileCheckSumer/issues/new";
 
         public MainWindow()
         {
@@ -53,7 +56,7 @@ namespace CheckSumCalculator
             var res = e.Result as CalculateResult;
             SHA512Cheksum.Text = res.SHA512;
             MD5Checksum.Text = res.MD5;
-            ShowToast("计算完成", 2);
+            ShowToast("算出来啦", 1);
         }
         #endregion
 
@@ -161,18 +164,18 @@ namespace CheckSumCalculator
         {
             if (string.IsNullOrEmpty(filePathTextBox.Text))
             {
-                ShowToast("请选择要计算的文件", 2);
+                ShowToast("请选择要计算的文件", 1);
                 return;
             }
 
             if (worker.IsBusy)
             {
-                ShowToast("正在计算，请稍后", 2);
+                ShowToast("正在算呢...，不要着急", 1);
                 return;
             }
             else
             {
-                ShowToast("计算中，请稍等", 2);
+                ShowToast("开始计算...", 1);
                 worker.RunWorkerAsync(filePathTextBox.Text);
             }
         }
@@ -191,5 +194,14 @@ namespace CheckSumCalculator
             ShowToast("已复制到粘贴板", 1);
         }
 
+        private void Feedback_Click(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = feedbackUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
     }
 }
