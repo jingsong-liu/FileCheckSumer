@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Navigation;
 using System.Windows.Threading;
 using Path = System.IO.Path;
 
@@ -97,18 +96,30 @@ namespace FileCheckSumer
         private void HideToast()
         {
             toast.Visibility = Visibility.Hidden;
-            toast.Text = "";
+            toastNormalText.Text = "";
+            toastHyperLinkText.Text = "";
         }
 
         private void ShowToast(string str)
         {
             toast.Visibility = Visibility.Visible;
-            toast.Text = str;
+            toastNormalText.Text = str;
         }
 
         private void ShowToast(string str, int showTime)
         {
+            ShowToast(str, showTime, null);
+        }
+
+        private void ShowToast(string str, int showTime, string hyperLinkUrl)
+        {
             ShowToast(str);
+            if (!string.IsNullOrEmpty(hyperLinkUrl))
+            {
+                toastHyperLinkText.Text = hyperLinkUrl;
+                toastHyperLinkText.TextDecorations = TextDecorations.Underline;
+            }
+
             var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(showTime), IsEnabled = true };
             timer.Tick += (sender, e) =>
             {
@@ -196,23 +207,138 @@ namespace FileCheckSumer
 
         private void Feedback_Click(object sender, RoutedEventArgs e)
         {
-            var psi = new ProcessStartInfo
-            {
-                FileName = feedbackUrl,
-                UseShellExecute = true
-            };
-            Process.Start(psi);
+            OpenUrlUseDefaultApp(feedbackUrl);
         }
 
+        private void ExportToYamlFile()
+        {
+            var exportFilePath = filePathTextBox.Text + ".yml";
+            try
+            {
+                var filesInfo = new
+                {
+                    version = "2.7.0.1",
+                    path = fileName.Text,
+                    sha512 = SHA512Cheksum.Text,
+                    releaseData = DateTime.Now.ToString(),
+                    files = new[]
+                    {
+                        new
+                        {
+                            url = fileName.Text,
+                            sha512 = SHA512Cheksum.Text,
+                            size = int.Parse(fileSize.Text),
+                        }
+                    }
+                };
+                var serializer = new YamlDotNet.Serialization.Serializer();
+                using var fs = new FileStream(exportFilePath, FileMode.Create);
+                using var fWriter = new StreamWriter(fs);
+                serializer.Serialize(fWriter, filesInfo);
+            }
+            catch (FormatException)
+            {
+                ShowToast("请先选择目标文件", 1);
+                return;
+            }
+            catch (ArgumentNullException)
+            {
+                ShowToast("请先选择目标文件", 1);
+                return;
+            }
+            catch (OverflowException)
+            {
+                ShowToast("目标文件过大，无法导出", 1);
+                return;
+            }
+            catch (NotSupportedException)
+            {
+                ShowToast("不支持此操作", 1);
+                return;
+            }
+            catch (System.Security.SecurityException)
+            {
+                ShowToast("拒绝次不安全操作", 1);
+                return;
+            }
+            catch (IOException e1) when (typeof(FileNotFoundException) == e1.GetType() ||
+            typeof(DirectoryNotFoundException) == e1.GetType())
+            {
+                ShowToast("导出目录不存在", 1);
+                return;
+            }
+            catch (PathTooLongException)
+            {
+                ShowToast("导出路径太长", 1);
+                return;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                ShowToast("无权限到处文件到目标目录", 1);
+                return;
+            }
+            catch (IOException)
+            {
+                ShowToast("无法读写导出文件", 1);
+                return;
+            }
+            catch (Exception)
+            {
+                ShowToast("导出失败", 1);
+                return;
+            }
+
+            ShowToast($"已导出到", 60, exportFilePath);
+
+        }
         private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(SHA512Cheksum.Text))
+            {
+                ShowToast("请先计算校验码");
+                return;
+            }
+
+            ExportToYamlFile();
+        }
+
+        private void toastHyperLinkText_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var hyperlinkText = sender as System.Windows.Documents.Run;
+            if (hyperlinkText == null)
+                return;
+
+            if (string.IsNullOrEmpty(hyperlinkText.Text))
+                return;
+
+            if (!new FileInfo(hyperlinkText.Text).Exists)
+                return;
+
+            var fileDirectoryUrl = Path.GetDirectoryName(hyperlinkText.Text);
+            OpenUrlUseDefaultApp(fileDirectoryUrl);
+        }
+
+        private bool OpenUrlUseDefaultApp(string url)
         {
             var psi = new ProcessStartInfo
             {
-                FileName = feedbackUrl,
+                FileName = url,
                 UseShellExecute = true
             };
-            Process.Start(psi);
+            try
+            {
+                Process.Start(psi);
+                return true;
+            }
+            catch (PlatformNotSupportedException)
+            {
+                ShowToast("没有可以打开的应用", 1);
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
-
     }
 }
