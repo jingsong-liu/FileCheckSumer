@@ -87,7 +87,7 @@ namespace FileCheckSumer
                 var hash = core.ComputeHash(fstream);
                 return BitConverter.ToString(hash).Replace("-", "");
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
