@@ -205,6 +205,7 @@
                                 </Grid>
                         </StackPanel>
                     </Border>
+                    <Button Margin="20" Content="导出校验信息到YAML文件" HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" Height="30" Padding="5 0"/>
                 </StackPanel>
             </Grid>
         </Grid>

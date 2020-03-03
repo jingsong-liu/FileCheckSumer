@@ -203,5 +203,16 @@ namespace FileCheckSumer
             };
             Process.Start(psi);
         }
+
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = feedbackUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
+
     }
 }
