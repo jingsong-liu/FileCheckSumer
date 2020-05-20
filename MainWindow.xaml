@@ -157,7 +157,7 @@
                 <StackPanel>
                         <TextBlock Name="toast" HorizontalAlignment="Right" Grid.Column="1" Margin="5" Foreground="White" Background="DimGray" Height="18" FontSize="14" Visibility="Hidden">
                             <Run Name="toastNormalText"/>
-                            <Run Name="toastHyperLinkText" MouseLeftButtonUp="toastHyperLinkText_MouseLeftButtonUp"/>
+                            <Run Name="toastHyperLinkText" MouseLeftButtonUp="ToastHyperLinkText_MouseLeftButtonUp"/>
                         </TextBlock>
                         <Grid>
                         <Grid.ColumnDefinitions>

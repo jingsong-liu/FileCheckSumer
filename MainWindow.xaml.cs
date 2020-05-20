@@ -135,8 +135,7 @@ namespace FileCheckSumer
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
-                if (files != null && files.Length > 0)
+                if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
                 {
                     ((TextBox)sender).Text = files[0];
                     fileSize.Text = new FileInfo(files[0]).Length.ToString();
@@ -303,10 +302,9 @@ namespace FileCheckSumer
             ExportToYamlFile();
         }
 
-        private void toastHyperLinkText_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ToastHyperLinkText_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var hyperlinkText = sender as System.Windows.Documents.Run;
-            if (hyperlinkText == null)
+            if (!(sender is System.Windows.Documents.Run hyperlinkText))
                 return;
 
             if (string.IsNullOrEmpty(hyperlinkText.Text))
