@@ -9,13 +9,12 @@
     <RepositoryUrl>https://github.com/jingsong-liu/FileCheckSumer/</RepositoryUrl>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YamlDotNet" Version="8.1.0" />
+    <PackageReference Include="YamlDotNet" Version="8.1.1" />
   </ItemGroup>
 
 </Project>

@@ -84,7 +84,7 @@ namespace FileCheckSumer
 
                 using var fstream = File.OpenRead(filepath);
                 var hash = core.ComputeHash(fstream);
-                return BitConverter.ToString(hash).Replace("-", "");
+                return BitConverter.ToString(hash).Replace("-", "").ToLower(System.Globalization.CultureInfo.InvariantCulture);
             }
             catch
             {
