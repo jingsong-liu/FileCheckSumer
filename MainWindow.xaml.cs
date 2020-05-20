@@ -140,6 +140,7 @@ namespace FileCheckSumer
                 {
                     ((TextBox)sender).Text = files[0];
                     fileSize.Text = new FileInfo(files[0]).Length.ToString();
+                    fileName.Text = Path.GetFileName(files[0]);
                 }
             }
         }
