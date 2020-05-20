@@ -221,7 +221,7 @@ namespace FileCheckSumer
                     version = "2.7.0.1",
                     path = fileName.Text,
                     sha512 = SHA512Cheksum.Text,
-                    releaseData = DateTime.Now.ToString(),
+                    releaseDate = DateTime.Now.ToString(),
                     files = new[]
                     {
                         new
